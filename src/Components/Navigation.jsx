@@ -1,0 +1,68 @@
+import React, { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
+
+function Navigation() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Tour Packages", href: "/tours" },
+    { name: "Attraction and Experiences", href: "/attraction" },
+    { name: "Destination", href: "/destinations" },
+    { name: "Blogs", href: "/blogs" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  return (
+    <header className="fixed top-0 w-full z-50 bg-transparent backdrop-blur-md border-b border-gray-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+        {/* === LOGO PLACE === */}
+        <Link to="/" className="flex items-center mr-4">
+          <img src="/logo.png" alt="Logo" className="h-12 w-auto" />
+        </Link>
+
+        {/* === DESKTOP NAVIGATION === */}
+        <nav className="hidden md:flex space-x-8">
+          {navLinks.map((link, idx) => (
+            <Link
+              key={idx}
+              to={link.href}
+              className="relative text-white font-medium pb-1 transition group"
+              onClick={() => setIsOpen(false)} // Close menu if open (optional)
+            >
+              {link.name}
+              <span className="absolute left-0 bottom-0 h-0.5 w-0 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* === MOBILE MENU TOGGLE === */}
+        <div className="md:hidden">
+          <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+            {isOpen ? <X size={24} color="gray" /> : <Menu size={24} color="gray" />}
+          </button>
+        </div>
+      </div>
+
+      {/* === MOBILE MENU === */}
+      {isOpen && (
+        <div className="md:hidden bg-white shadow-md border-t border-gray-200 px-4 py-4 space-y-3">
+          {navLinks.map((link, idx) => (
+            <Link
+              key={idx}
+              to={link.href}
+              className="block text-gray-700 hover:text-blue-600 font-medium"
+              onClick={() => setIsOpen(false)} // Close mobile menu on click
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </header>
+  );
+}
+
+export default Navigation;

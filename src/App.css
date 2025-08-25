@@ -1,0 +1,20 @@
+.swiper-pagination {
+  margin-top: 20px;
+  position: relative;
+}
+
+.swiper-pagination-bullet {
+  background-color: #d1d5db; /* tailwind gray-300 */
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #1f2937; /* tailwind gray-800 */
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #1f2937; /* tailwind gray-800 */
+  width: 28px;
+  height: 28px;
+}
