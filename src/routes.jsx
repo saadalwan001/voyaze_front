@@ -8,10 +8,11 @@ import Tour from "@/Tour/TourPack.jsx";
 import Attraction from "@/Attraction/Attraction.jsx";
 import Destination from "@/Destination/Destination.jsx";
 import Blog from "@/Blog/T_blog.jsx";
-import Contact from "@/Contact/Contact.jsx"
-import Login from "@/Admin/Login.jsx"
-import Dashboard from "@/Admin/Dashboard.jsx"
-import A_package from "@/Admin/Admin_Tour_Package.jsx"
+import Contact from "@/Contact/Contact.jsx";
+import Login from "@/Admin/Login.jsx";
+import Dashboard from "@/Admin/Dashboard.jsx";
+import A_package from "@/Admin/Admin_Tour_Package.jsx";
+import PackageDetails from "./Tour/PackageDetails";
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -28,6 +29,7 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         <Route path="/blogs" element={<Blog/>}/>
         <Route path ="/contact" element={<Contact/>}/> 
         <Route path="/admin-login" element={<Login/>}/>
+        <Route path="/package/:id" element={<PackageDetails/>}/>
         
 
 
