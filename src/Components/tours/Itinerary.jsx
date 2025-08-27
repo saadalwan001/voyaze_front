@@ -14,7 +14,7 @@ const Itinerary = ({ itineraries }) => {
   };
 
   return (
-    <div className="max-w-7xl ml-[120px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="ml-[-60px] max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8">
     <div className="mt-12 max-w-4xl  px-4 sm:px-6 lg:px-8 ">
 
       {/* Header */}
@@ -75,28 +75,7 @@ const Itinerary = ({ itineraries }) => {
                     <div className="mt-2 text-gray-600 text-justify">
                       <p className="whitespace-pre-line">{item.description}</p>
 
-                      {/* Included / Excluded Items */}
-                      <div className="flex justify-between mt-4">
-                        <div className="flex flex-col space-y-1">
-                          <span className="text-xl text-gray-950">Included</span>
-                          {item.included_items?.map((inc, i) => (
-                            <div key={i} className="flex items-center text-green-600">
-                              <Check className="w-4 h-4 mr-1" /> {inc}
-                              
-                            </div>
-                            
-                          ))}
-                        </div>
-                        
-                        <div className="flex flex-col space-y-1 text-red-600">
-                          <span className="text-xl text-gray-950 text-right">Excluded</span>
-                          {item.excluded_items?.map((exc, i) => (
-                            <div key={i} className="flex items-center">
-                              <X className="w-4 h-4 mr-1" /> {exc}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      
 
                       {/* Horizontal line */}
                       <hr className="mt-4 border-gray-200" />

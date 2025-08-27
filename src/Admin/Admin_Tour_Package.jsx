@@ -17,8 +17,12 @@ export default function AdminTourPackage() {
   const [subImages, setSubImages] = useState([null, null, null, null]);
   const [subImagesPreview, setSubImagesPreview] = useState([null, null, null, null]);
 
+  // NEW → Package-level includes/excludes
+  const [includedItems, setIncludedItems] = useState([]);
+  const [excludedItems, setExcludedItems] = useState([]);
+
   const [itineraries, setItineraries] = useState([
-    { day_title: "Day 1", description: "", includeToggle: false, includedItems: [], excludedItems: [] },
+    { day_title: "Day 1", description: "" },
   ]);
 
   // --- Fetch existing packages ---
@@ -26,10 +30,11 @@ export default function AdminTourPackage() {
     if (!isNewPackage) {
       const fetchPackages = async () => {
         try {
-          const token =localStorage.getItem("admin_token");
-          const res = await api.get("/admin-packages" ,{
-            headers:{Authorization:`Bearer ${token}`}});
-          
+          const token = localStorage.getItem("admin_token");
+          const res = await api.get("/admin-packages", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
           setExistingPackages(res.data);
           if (res.data.length > 0) setSelectedPackage(res.data[0].id);
         } catch (err) {
@@ -60,7 +65,7 @@ export default function AdminTourPackage() {
   const handleAddItinerary = () => {
     setItineraries([
       ...itineraries,
-      { day_title: `Day ${itineraries.length + 1}`, description: "", includeToggle: false, includedItems: [], excludedItems: [] },
+      { day_title: `Day ${itineraries.length + 1}`, description: "" },
     ]);
   };
 
@@ -70,106 +75,93 @@ export default function AdminTourPackage() {
     setItineraries(updated);
   };
 
-  const handleIncludeToggle = (index) => {
-    const updated = [...itineraries];
-    updated[index].includeToggle = !updated[index].includeToggle;
-    setItineraries(updated);
-  };
-
-  const addIncludeItem = (index, e) => {
+  // --- Package Include/Exclude Handlers ---
+  const addIncludeItem = (e) => {
     if (e.key === "Enter" && e.target.value.trim() !== "") {
       e.preventDefault();
-      const updated = [...itineraries];
-      updated[index].includedItems.push(e.target.value.trim());
-      setItineraries(updated);
+      setIncludedItems([...includedItems, e.target.value.trim()]);
       e.target.value = "";
     }
   };
 
-  const removeIncludeItem = (itIndex, itemIndex) => {
-    const updated = [...itineraries];
-    updated[itIndex].includedItems.splice(itemIndex, 1);
-    setItineraries(updated);
+  const removeIncludeItem = (idx) => {
+    const updated = [...includedItems];
+    updated.splice(idx, 1);
+    setIncludedItems(updated);
   };
 
-  const addExcludeItem = (index, e) => {
+  const addExcludeItem = (e) => {
     if (e.key === "Enter" && e.target.value.trim() !== "") {
       e.preventDefault();
-      const updated = [...itineraries];
-      updated[index].excludedItems.push(e.target.value.trim());
-      setItineraries(updated);
+      setExcludedItems([...excludedItems, e.target.value.trim()]);
       e.target.value = "";
     }
   };
 
-  const removeExcludeItem = (itIndex, itemIndex) => {
-    const updated = [...itineraries];
-    updated[itIndex].excludedItems.splice(itemIndex, 1);
-    setItineraries(updated);
+  const removeExcludeItem = (idx) => {
+    const updated = [...excludedItems];
+    updated.splice(idx, 1);
+    setExcludedItems(updated);
   };
-
-  
 
   // --- Submit Handler ---
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const formData = new FormData();
+    const formData = new FormData();
+    formData.append("is_new_package", isNewPackage);
 
-  formData.append("is_new_package", isNewPackage);
-
-  if (isNewPackage) {
-    formData.append("title", title);
-    formData.append("total_days", totalDays);
-    formData.append("description", description);
-    if (mainImage) formData.append("main_image", mainImage);
-    subImages.forEach((img, idx) => img && formData.append(`sub_image${idx + 1}`, img));
-  } else {
-    formData.append("existing_package_id", selectedPackage);
-  }
-
-  // Map keys to match backend
-  const payloadItineraries = itineraries.map(it => ({
-    day_title: it.day_title,
-    description: it.description,
-    include_toggle: it.includeToggle,
-    included_items: it.includedItems,
-    excluded_items: it.excludedItems,
-  }));
-
-  formData.append("itineraries", JSON.stringify(payloadItineraries));
-
-  try {
-    const token = localStorage.getItem("admin_token");
-    await api.post("/admin-packages", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    alert("Tour Package / Itineraries Added Successfully!");
-
-    // Reset Form
     if (isNewPackage) {
-      setTitle("");
-      setTotalDays(1);
-      setDescription("");
-      setMainImage(null);
-      setMainImagePreview(null);
-      setSubImages([null, null, null, null]);
-      setSubImagesPreview([null, null, null, null]);
+      formData.append("title", title);
+      formData.append("total_days", totalDays);
+      formData.append("description", description);
+      includedItems.forEach(item => formData.append("included_items[]", item));
+      excludedItems.forEach(item => formData.append("excluded_items[]", item));
+
+      if (mainImage) formData.append("main_image", mainImage);
+      subImages.forEach(
+        (img, idx) => img && formData.append(`sub_image${idx + 1}`, img)
+      );
+    } else {
+      formData.append("existing_package_id", selectedPackage);
     }
 
-    setItineraries([{ day_title: "Day 1", description: "", includeToggle: false, includedItems: [], excludedItems: [] }]);
-  } catch (err) {
-    console.error(err);
-    alert(err.response?.data?.message || "Error adding tour package!");
-  }
-};
+    const payloadItineraries = itineraries.map((it) => ({
+      day_title: it.day_title,
+      description: it.description,
+    }));
 
+    formData.append("itineraries", JSON.stringify(payloadItineraries));
 
-  
+    try {
+      const token = localStorage.getItem("admin_token");
+      await api.post("/admin-packages", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Tour Package / Itineraries Added Successfully!");
+
+      if (isNewPackage) {
+        setTitle("");
+        setTotalDays(1);
+        setDescription("");
+        setIncludedItems([]);
+        setExcludedItems([]);
+        setMainImage(null);
+        setMainImagePreview(null);
+        setSubImages([null, null, null, null]);
+        setSubImagesPreview([null, null, null, null]);
+      }
+
+      setItineraries([{ day_title: "Day 1", description: "" }]);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Error adding tour package!");
+    }
+  };
 
   return (
     <>
@@ -192,8 +184,6 @@ export default function AdminTourPackage() {
             Create New Package
           </label>
         </div>
-
-        
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Existing Package Dropdown */}
@@ -256,6 +246,61 @@ export default function AdminTourPackage() {
                 />
               </div>
 
+              {/* Package Includes/Excludes */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Includes */}
+                <div>
+                  <label className="font-medium text-gray-700">Includes</label>
+                  <input
+                    type="text"
+                    placeholder="Press Enter to add"
+                    onKeyDown={addIncludeItem}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:border-transparent shadow-sm transition duration-200"
+                  />
+                  <ul className="mt-2 space-y-1">
+                    {includedItems.map((item, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center justify-between bg-green-100 px-2 py-1 rounded-md"
+                      >
+                        <div className="flex items-center gap-1">
+                          <Check size={16} /> {item}
+                        </div>
+                        <button type="button" onClick={() => removeIncludeItem(i)}>
+                          X
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Excludes */}
+                <div>
+                  <label className="font-medium text-gray-700">Excludes</label>
+                  <input
+                    type="text"
+                    placeholder="Press Enter to add"
+                    onKeyDown={addExcludeItem}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent shadow-sm transition duration-200"
+                  />
+                  <ul className="mt-2 space-y-1">
+                    {excludedItems.map((item, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center justify-between bg-red-100 px-2 py-1 rounded-md"
+                      >
+                        <div className="flex items-center gap-1">
+                          <X size={16} /> {item}
+                        </div>
+                        <button type="button" onClick={() => removeExcludeItem(i)}>
+                          X
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
               {/* Images */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">Images</h3>
@@ -272,7 +317,11 @@ export default function AdminTourPackage() {
                       />
                     </label>
                     {mainImagePreview && (
-                      <img src={mainImagePreview} alt="Main Preview" className="mt-2 w-32 h-20 object-cover rounded-md" />
+                      <img
+                        src={mainImagePreview}
+                        alt="Main Preview"
+                        className="mt-2 w-32 h-20 object-cover rounded-md"
+                      />
                     )}
                     {mainImage && <span className="mt-1 text-sm text-gray-700">{mainImage.name}</span>}
                   </div>
@@ -308,8 +357,13 @@ export default function AdminTourPackage() {
           <div className="border-l-4 border-blue-600 bg-blue-50 p-6 rounded-lg space-y-4">
             <h3 className="font-semibold text-xl text-[#313041] mb-2">Itineraries</h3>
             {itineraries.map((it, idx) => (
-              <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-4 border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition duration-200">
-                <label className="col-span-12 sm:col-span-3 font-medium text-gray-700">Day Title</label>
+              <div
+                key={idx}
+                className="grid grid-cols-1 sm:grid-cols-12 gap-4 border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition duration-200"
+              >
+                <label className="col-span-12 sm:col-span-3 font-medium text-gray-700">
+                  Day Title
+                </label>
                 <input
                   type="text"
                   value={it.day_title}
@@ -317,7 +371,9 @@ export default function AdminTourPackage() {
                   className="col-span-12 sm:col-span-9 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-sm transition duration-200"
                 />
 
-                <label className="col-span-12 sm:col-span-3 font-medium text-gray-700 mt-2 sm:mt-0">Description</label>
+                <label className="col-span-12 sm:col-span-3 font-medium text-gray-700 mt-2 sm:mt-0">
+                  Description
+                </label>
                 <textarea
                   value={it.description}
                   onChange={(e) => handleItineraryChange(idx, "description", e.target.value)}
@@ -325,60 +381,6 @@ export default function AdminTourPackage() {
                   placeholder="Write itinerary details..."
                   className="col-span-12 sm:col-span-9 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-sm transition duration-200 resize-none"
                 />
-
-                {/* Include / Exclude Toggle */}
-                <div className="col-span-12 flex items-center gap-3 mt-2">
-                  <label className="font-medium text-gray-700">Add Include/Exclude</label>
-                  <input
-                    type="checkbox"
-                    checked={it.includeToggle}
-                    onChange={() => handleIncludeToggle(idx)}
-                    className="w-5 h-5 accent-blue-600"
-                  />
-                </div>
-
-                {/* Include / Exclude Lists */}
-                {it.includeToggle && (
-                  <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                    {/* Include List */}
-                    <div>
-                      <label className="font-medium text-gray-700">Include</label>
-                      <input
-                        type="text"
-                        placeholder="Press Enter to add"
-                        onKeyDown={(e) => addIncludeItem(idx, e)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:border-transparent shadow-sm transition duration-200"
-                      />
-                      <ul className="mt-2 space-y-1">
-                        {it.includedItems.map((item, i) => (
-                          <li key={i} className="flex items-center justify-between bg-green-100 px-2 py-1 rounded-md">
-                            <div className="flex items-center gap-1"><Check size={16} /> {item}</div>
-                            <button type="button" onClick={() => removeIncludeItem(idx, i)}>X</button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Exclude List */}
-                    <div>
-                      <label className="font-medium text-gray-700">Exclude</label>
-                      <input
-                        type="text"
-                        placeholder="Press Enter to add"
-                        onKeyDown={(e) => addExcludeItem(idx, e)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent shadow-sm transition duration-200"
-                      />
-                      <ul className="mt-2 space-y-1">
-                        {it.excludedItems.map((item, i) => (
-                          <li key={i} className="flex items-center justify-between bg-red-100 px-2 py-1 rounded-md">
-                            <div className="flex items-center gap-1"><X size={16} /> {item}</div>
-                            <button type="button" onClick={() => removeExcludeItem(idx, i)}>X</button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
 
