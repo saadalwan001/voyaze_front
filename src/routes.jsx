@@ -13,6 +13,9 @@ import Login from "@/Admin/Login.jsx";
 import Dashboard from "@/Admin/Dashboard.jsx";
 import A_package from "@/Admin/Admin_Tour_Package.jsx";
 import PackageDetails from "./Tour/PackageDetails";
+import Admin_Tour_Packge_Card from '@/Admin/Admin_Tour_Packge_Card.jsx';
+import Admin_Edit_Tour_Package from '@/Admin/Admin_Edit_Tour_Package.jsx';
+import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page";
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -51,6 +54,38 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
           </ProtectedRoute>
         }
       />
+
+       {/* Package Management (cards) */}
+      <Route
+        path="/admin-packcards"
+        element={
+          <ProtectedRoute>
+            <Admin_Tour_Packge_Card/>
+          </ProtectedRoute>
+        }
+      />
+
+       {/* Package Edit (cards) */}
+      <Route
+        path="/admin-editcards/:id"
+        element={
+          <ProtectedRoute>
+            <Admin_Edit_Tour_Package/>
+          </ProtectedRoute>
+        }
+      />
+
+      {/*Attraction & Experienc adding page */}
+      <Route
+        path="/admin-attraction"
+        element={
+          <ProtectedRoute>
+            <Admin_AddAttraction/>
+          </ProtectedRoute>
+        }
+      />
+
+
       <Route path="/admin-packages" element={<ProtectedRoute><A_package/></ProtectedRoute>}/>
       
     </Routes>

@@ -9,8 +9,8 @@ import {Link, useNavigate } from "react-router-dom";
     const navigate = useNavigate();
 
     const navLinks = [
-        {name: "Tour Packages", href:"/admin-packages"},
-        {name: "Attraction & Experience", href:"#"},
+        {name: "Tour Packages", href:"/admin-packcards"},
+        {name: "Attraction & Experience", href:"/admin-attraction"},
         {name: "Blogs", href:"#"},
         {name: "Contact Us", href:"#"},
         {name: "Profile", href:"#"},
