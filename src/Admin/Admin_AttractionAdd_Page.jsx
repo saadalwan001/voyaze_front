@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/utlis/axios.js";
 import Admin_Nav from "@/Components/Admin/Admin_Nav.jsx";
@@ -15,26 +15,6 @@ export default function Admin_AddAttraction() {
 
   const [backImg, setBackImg] = useState(null);
   const [backImgPreview, setBackImgPreview] = useState(null);
-
-  const [tourPackages, setTourPackages] = useState([]);
-  const [selectedPackages, setSelectedPackages] = useState([]);
-
-  // Fetch all available tour packages
-  useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const token = localStorage.getItem("admin_token");
-        const res = await api.get("/admin-packages", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setTourPackages(res.data);
-      } catch (err) {
-        console.error(err);
-        alert("Error fetching tour packages");
-      }
-    };
-    fetchPackages();
-  }, []);
 
   const handleFrontImgChange = (file) => {
     setFrontImg(file);
@@ -64,7 +44,6 @@ export default function Admin_AddAttraction() {
     formData.append("description", description);
     if (frontImg) formData.append("front_img", frontImg);
     if (backImg) formData.append("back_img", backImg);
-    selectedPackages.forEach((id) => formData.append("tour_packages[]", id));
 
     try {
       const token = localStorage.getItem("admin_token");
@@ -157,26 +136,6 @@ export default function Admin_AddAttraction() {
                 </label>
               )}
             </div>
-          </div>
-
-          {/* Tour Packages Selection */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-2">Link Tour Packages</label>
-            <select
-              multiple
-              value={selectedPackages}
-              onChange={(e) =>
-                setSelectedPackages(Array.from(e.target.selectedOptions, (option) => option.value))
-              }
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400"
-            >
-              {tourPackages.map((pkg) => (
-                <option key={pkg.id} value={pkg.id}>
-                  {pkg.title}
-                </option>
-              ))}
-            </select>
-            <p className="text-gray-500 text-sm mt-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple packages</p>
           </div>
 
           {/* Submit */}
