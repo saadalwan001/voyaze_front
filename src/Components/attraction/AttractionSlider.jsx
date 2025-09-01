@@ -7,14 +7,14 @@ export default function AttractionSlider() {
   const [visibleCards, setVisibleCards] = useState(4);
   const timeoutRef = useRef(null);
 
-  // Fetch attractions from API
+  
   useEffect(() => {
     api.get("/attractions")
       .then((res) => setAttractions(res.data))
       .catch((err) => console.error("Error fetching attractions:", err));
   }, []);
 
-  // Responsive visible cards
+
   useEffect(() => {
     function handleResize() {
       if (window.innerWidth < 640) setVisibleCards(1);
@@ -30,7 +30,7 @@ export default function AttractionSlider() {
   const totalCards = attractions.length;
   const maxIndex = totalCards - visibleCards >= 0 ? totalCards - visibleCards : 0;
 
-  // Auto-slide
+  
   useEffect(() => {
     resetTimeout();
     timeoutRef.current = setTimeout(() => {
@@ -46,22 +46,22 @@ export default function AttractionSlider() {
   const prevSlide = () => setActiveIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
   const nextSlide = () => setActiveIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
 
-  // Card dimensions
-  const cardWidth = 300; // px
-  const cardMarginX = 16; // px
+ 
+  const cardWidth = 300; 
+  const cardMarginX = 16; 
   const cardTotalWidth = cardWidth + cardMarginX * 2;
 
   return (
     <section className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Section Title */}
+     
         
         <h3 className="text-xl md:text-4xl font-bold text-gray-800 mb-20">
           Most Popular Destination
         </h3>
         
 
-        {/* Carousel */}
+        {/* slider */}
         <div className="flex justify-center relative">
           <div className="relative overflow-hidden" style={{ width: cardTotalWidth * visibleCards }}>
             <div
@@ -88,7 +88,7 @@ export default function AttractionSlider() {
               ))}
             </div>
 
-            {/* Left Arrow */}
+            
             <button
               onClick={prevSlide}
               className="absolute top-1/2 left-2 -translate-y-1/2 p-1 z-20"
@@ -105,7 +105,7 @@ export default function AttractionSlider() {
               </svg>
             </button>
 
-            {/* Right Arrow */}
+          
             <button
               onClick={nextSlide}
               className="absolute top-1/2 right-2 -translate-y-1/2 p-1 z-20"
@@ -124,7 +124,7 @@ export default function AttractionSlider() {
 
             
           </div>
-          {/* Pagination Dots at bottom-left */}
+          {/* Pagination Dots  */}
             <div className="flex space-x-2 absolute bottom-[-20px] left-2 z-20  ">
               {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
                 <button
