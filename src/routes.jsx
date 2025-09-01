@@ -16,6 +16,7 @@ import PackageDetails from "./Tour/PackageDetails";
 import Admin_Tour_Packge_Card from '@/Admin/Admin_Tour_Packge_Card.jsx';
 import Admin_Edit_Tour_Package from '@/Admin/Admin_Edit_Tour_Package.jsx';
 import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page";
+import Location from "@/location.jsx";
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -33,6 +34,7 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         <Route path ="/contact" element={<Contact/>}/> 
         <Route path="/admin-login" element={<Login/>}/>
         <Route path="/package/:id" element={<PackageDetails/>}/>
+        <Route path="/location/:id" element={<Location/>}/>
         
 
 

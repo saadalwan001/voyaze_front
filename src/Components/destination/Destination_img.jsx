@@ -50,7 +50,7 @@ const destinations = [
 
 const DesSection = () => {
   return (
-    <section className="py-16 px-4 md:px-12 bg-gray-50 text-center">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h3 className="text-lg md:text-xl text-gray-500 mb-2">
         Explore the Beauty of the Island Paradise
       </h3>
