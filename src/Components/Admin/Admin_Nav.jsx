@@ -10,7 +10,7 @@ import {Link, useNavigate } from "react-router-dom";
 
     const navLinks = [
         {name: "Tour Packages", href:"/admin-packcards"},
-        {name: "Attraction & Experience", href:"/admin-attraction"},
+        {name: "Attraction & Experience", href:"/admin-attraction/cards"},
         {name: "Blogs", href:"#"},
         {name: "Contact Us", href:"#"},
         {name: "Profile", href:"#"},
