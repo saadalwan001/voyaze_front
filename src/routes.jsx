@@ -15,10 +15,11 @@ import A_package from "@/Admin/Admin_Tour_Package.jsx";
 import PackageDetails from "./Tour/PackageDetails";
 import Admin_Tour_Packge_Card from '@/Admin/Admin_Tour_Packge_Card.jsx';
 import Admin_Edit_Tour_Package from '@/Admin/Admin_Edit_Tour_Package.jsx';
-import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page";
+import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page.jsx";
 import Location from "@/location.jsx";
-import Admin_Attraction_Card from "./Admin/Admin_Attraction_Cards";
-import Admin_EditAttraction from "./Admin/Admin_Attraction_Edit";
+import Admin_Attraction_Card from "./Admin/Admin_Attraction_Cards.jsx";
+import Admin_EditAttraction from "./Admin/Admin_Attraction_Edit.jsx";
+import AdminBlogCreate from "./Admin/Admin_CreateBlog.jsx";
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -106,6 +107,16 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         element={
           <ProtectedRoute>
             <Admin_EditAttraction/>
+          </ProtectedRoute>
+        }
+      />
+
+        {/* Blog Creation Page */}
+      <Route
+        path="/admin-create-blogs"
+        element={
+          <ProtectedRoute>
+            <AdminBlogCreate/>
           </ProtectedRoute>
         }
       />
