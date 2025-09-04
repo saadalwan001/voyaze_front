@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "@/utlis/axios.js";
 import Admin_Nav from "@/Components/Admin/Admin_Nav.jsx";
 import { X } from "lucide-react";
 import Footer from "@/Components/Footer";
 
-export default function AdminBlogCreate() {
+export default function AdminBlogEdit() {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [admins, setAdmins] = useState([]);
   const [title, setTitle] = useState("");
@@ -17,21 +18,38 @@ export default function AdminBlogCreate() {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const editorRef = useRef(null); // contenteditable div
+  const editorRef = useRef(null);
 
   const categories = [
-    "Travel Tips",
-    "Destinations",
-    "Cultural Experiences",
-    "Adventure & Activities",
-    "Food & Cuisine",
-    "Events & Festivals",
-    "Luxury Travel",
-    "Budget Travel",
+    "Travel Tips", "Destinations", "Cultural Experiences",
+    "Adventure & Activities", "Food & Cuisine",
+    "Events & Festivals", "Luxury Travel", "Budget Travel",
     "Family Travel",
   ];
 
-  // Fetch admins for dropdown
+  // Fetch blog details
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        const res = await api.get(`/admin-blogs/${id}`);
+        const blog = res.data;
+        setTitle(blog.title);
+        setAdminId(blog.admin_id);
+        setCategory(blog.category);
+        setPublishedDate(blog.publisher_date);
+        editorRef.current.innerText = blog.description || "";
+        if (blog.img_url) {
+          setImagePreview(`${import.meta.env.VITE_API_URL.replace("/api", "")}${blog.img_url}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching blog data");
+      }
+    };
+    fetchBlog();
+  }, [id]);
+
+  // Fetch admins
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -55,43 +73,63 @@ export default function AdminBlogCreate() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
+  // Frontend validation
+  if (!adminId || !title.trim() || !category || !publishedDate || !editorRef.current.innerHTML.trim()) {
+    alert("Please fill all required fields.");
+    setLoading(false);
+    return;
+  }
+
+  try {
     const formData = new FormData();
-    formData.append("title", title);
+    formData.append("_method", "PATCH"); // Important: Laravel PATCH with multipart/form-data
     formData.append("admin_id", adminId);
+    formData.append("title", title.trim());
     formData.append("category", category);
-    formData.append("publisher_date", new Date().toISOString().split("T")[0]);
-
-    const descriptionHTML = editorRef.current.innerHTML;
-    formData.append("description", descriptionHTML);
+    formData.append("publisher_date", publishedDate);
+    formData.append("description", editorRef.current.innerHTML.trim());
 
     if (image) {
       formData.append("image", image, image.name);
     }
 
-    try {
-      await api.post("/admin-blogs", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setLoading(false);
-      alert("Blog Created Sucessfull");
-      navigate("/admin-dashboard");
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      alert(err.response?.data?.message || "Error creating blog!");
+    // Send as POST with _method=PATCH
+    const res = await api.post(`/admin-blogs/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    setLoading(false);
+    alert(res.data.message || "Blog updated successfully!");
+    navigate("/admin-dashboard");
+
+  } catch (err) {
+    setLoading(false);
+    console.error(err);
+
+    const responseData = err.response?.data;
+
+    if (responseData?.errors) {
+      // Collect all backend validation messages
+      const messages = Object.values(responseData.errors)
+        .flat()
+        .join("\n");
+      alert(messages);
+    } else {
+      alert(responseData?.message || "Error updating blog!");
     }
-  };
+  }
+};
+
 
   return (
     <>
       <Admin_Nav />
       <div className="max-w-5xl mx-auto px-4 py-10">
-        <h2 className="text-3xl font-extrabold text-center mb-10">Create Blog</h2>
+        <h2 className="text-3xl font-extrabold text-center mb-10">Edit Blog</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-
           {/* Author */}
           <div>
             <label className="block font-medium text-gray-700 mb-2">Author</label>
@@ -102,7 +140,7 @@ export default function AdminBlogCreate() {
               required
             >
               <option value="">Select Author</option>
-              {admins?.map((admin) => (
+              {admins.map((admin) => (
                 <option key={admin.id} value={admin.id}>{admin.name}</option>
               ))}
             </select>
@@ -151,12 +189,10 @@ export default function AdminBlogCreate() {
           {/* Description */}
           <div>
             <label className="block font-medium text-gray-700 mb-2">Description</label>
-            
             <div
               ref={editorRef}
               contentEditable
               className="border border-gray-300 rounded-lg min-h-[200px] p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Type or paste your formatted text here..."
               suppressContentEditableWarning={true}
             />
           </div>
@@ -168,23 +204,14 @@ export default function AdminBlogCreate() {
               {imagePreview ? (
                 <div className="relative">
                   <img src={imagePreview} alt="Preview" className="w-48 h-28 object-cover rounded-md" />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                  >
+                  <button type="button" onClick={removeImage} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700">
                     <X size={16} />
                   </button>
                 </div>
               ) : (
                 <label className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700">
                   Upload Image
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleImageChange(e.target.files[0])}
-                  />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e.target.files[0])} />
                 </label>
               )}
             </div>
@@ -192,17 +219,13 @@ export default function AdminBlogCreate() {
 
           {/* Submit */}
           <div className="text-right">
-            <button
-              type="submit"
-              className="bg-[#024360] text-white px-6 py-3 rounded-lg hover:text-[#75798B] shadow-md transition duration-200 font-medium"
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Create Blog"}
+            <button type="submit" className="bg-[#024360] text-white px-6 py-3 rounded-lg hover:text-[#75798B] shadow-md transition duration-200 font-medium" disabled={loading}>
+              {loading ? "Updating..." : "Update Blog"}
             </button>
           </div>
         </form>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

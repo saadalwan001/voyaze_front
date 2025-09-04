@@ -20,6 +20,9 @@ import Location from "@/location.jsx";
 import Admin_Attraction_Card from "./Admin/Admin_Attraction_Cards.jsx";
 import Admin_EditAttraction from "./Admin/Admin_Attraction_Edit.jsx";
 import AdminBlogCreate from "./Admin/Admin_CreateBlog.jsx";
+import Admin_Blog_Cards from "./Admin/Admin_BlogsCards";
+import AdminBlogEdit from "./Admin/Admin_BlogEdit.jsx";
+import Each_blog from "./Blog/Blog_Individual.jsx"
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -38,6 +41,7 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         <Route path="/admin-login" element={<Login/>}/>
         <Route path="/package/:id" element={<PackageDetails/>}/>
         <Route path="/location/:id" element={<Location/>}/>
+        <Route path="/blog/:id" element={<Each_blog/>}/>
 
         
 
@@ -117,6 +121,26 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         element={
           <ProtectedRoute>
             <AdminBlogCreate/>
+          </ProtectedRoute>
+        }
+      />
+
+    
+       {/* All Blogs  Page */}
+      <Route
+        path="/admin-all-blogs"
+        element={
+          <ProtectedRoute>
+            <Admin_Blog_Cards/>
+          </ProtectedRoute>
+        }
+      />
+      {/*Blogs Edit  Page */}
+      <Route
+        path="/admin-edit-blogs/:id"
+        element={
+          <ProtectedRoute>
+            <AdminBlogEdit/>
           </ProtectedRoute>
         }
       />
