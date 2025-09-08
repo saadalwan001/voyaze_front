@@ -1,26 +1,45 @@
 import React, { useState } from "react";
+import api from "@/utlis/axios.js";
 
-function CommentForm() {
+function CommentForm({blogId}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
   const [saveInfo, setSaveInfo] = useState(false);
+  const [message, setMessage]=useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // For now just log values. Later you can integrate API
-    console.log({ name, email, comment, saveInfo });
-    // Reset form if needed
-    setName("");
-    setEmail("");
-    setComment("");
-    setSaveInfo(false);
+    try{
+      const res=await api.post("/comments",{
+        blog_id:  blogId,
+        commenter_name:name,
+        commenter_email:email,
+        commenter_text:comment,
+
+      });
+
+      setMessage(res.data.message);
+      setName("");
+      setEmail("");
+      setComment("");
+      setSaveInfo(false);
+    }catch (err) {
+  if (err.response?.status === 422) {
+    console.error("Validation failed:", err.response.data.errors); // 👈 see exact fields
+    setMessage("Validation failed. Please check your input.");
+  } else {
+    console.error(err);
+    setMessage("Failed to post Comment. Try Again.");
+  }
+}
+  
   };
 
   return (
     <section className="max-w-7xl mt-12 px-4 sm:px-6 lg:px-8 mx-[-28px]">
       {/* Heading */}
-      <span className="text-xl font-semibold mb-6">Add a Comment</span>
+      <span className="text-xl font-semibold mb-6 text-[#1A5775]">Add a Comment</span>
 
       {/* Horizontal Line */}
       <div className="w-20 h-0.5  bg-[#313d44] mb-10 mt-4"></div>
@@ -29,6 +48,8 @@ function CommentForm() {
       <p className="text-gray-500 text-sm mb-4 ">
         Your email address will not be published
       </p>
+
+      {message && <p className="text-green-600">{message}</p>}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 ">

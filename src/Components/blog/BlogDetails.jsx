@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "@/utlis/axios.js";
 import Blog_C from '@/Components/blog/Blog_Comment.jsx';
+import Comments from '@/Components/blog/CommentList.jsx';
 
 function BlogDetails() {
   const { id } = useParams();
@@ -65,7 +66,8 @@ function BlogDetails() {
           dangerouslySetInnerHTML={{ __html: description }}
         />
         <hr className="border-gray-300 mb-4 mt-6" />
-        <Blog_C/>
+        <Comments blogId={id}/>
+        <Blog_C blogId={id}/>
       </div>
       
 

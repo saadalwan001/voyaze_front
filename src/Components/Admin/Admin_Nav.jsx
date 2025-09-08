@@ -12,7 +12,7 @@ import {Link, useNavigate } from "react-router-dom";
         {name: "Tour Packages", href:"/admin-packcards"},
         {name: "Attraction & Experience", href:"/admin-attraction/cards"},
         {name: "Blogs", href:"/admin-all-blogs"},
-        {name: "Contact Us", href:"#"},
+        {name: "Contact", href:"#"},
         {name: "Profile", href:"#"},
         
     ];
