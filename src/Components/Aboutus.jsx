@@ -2,8 +2,8 @@ import React from "react";
 
 export default function AboutUs() {
   return (
-    <section className="w-full py-16 bg-white mb-[80px]" id="about">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-center gap-8">
+    <section className="w-full py-4 md:py-16 bg-white mb-[80px]" id="about">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-center gap-8 md:gap-28">
         
         {/* Left Side Image */}
         <div className="w-full md:w-1/2 lg:w-[470px] h-auto">
@@ -36,20 +36,20 @@ export default function AboutUs() {
           ></div>
 
           {/* Paragraphs */}
-          <p className="text-gray-700 text-sm sm:text-base md:text-base mb-4">
+          <p className="text-gray-500 text-sm sm:text-base md:text-base mb-4">
             At <b>Voyaz Travel</b>, a trusted inbound Destination Management Company in Sri Lanka, we create unforgettable travel experiences for international visitors.
           </p>
 
-          <p className="text-gray-700 text-sm sm:text-base md:text-base mb-4">
+          <p className="text-gray-500 text-sm sm:text-base md:text-base mb-4">
             With deep local expertise and a passion for sharing Sri Lanka's vibrant culture, stunning landscapes, and hidden gems, we craft tailor-made tours that capture the island's true spirit.
           </p>
 
-          <p className="text-gray-700 text-sm sm:text-base md:text-base mb-6">
+          <p className="text-gray-500 text-sm sm:text-base md:text-base mb-6">
             From your arrival to departure, every detail is thoughtfully handled to ensure a seamless, immersive, and enriching journey – helping you experience Sri Lanka through the eyes of those who know it best.
           </p>
 
           {/* Button */}
-          <button className="bg-[#03567F] text-white text-sm px-5 py-3 w-fit rounded hover:bg-[#024360] transition-all mt-5">
+          <button className="bg-[#03567F] text-white text-sm px-10 py-4 w-fit rounded hover:bg-[#024360] transition-all mt-5 cursor-pointer">
             READ MORE &nbsp; →
           </button>
         </div>

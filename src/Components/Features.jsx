@@ -38,7 +38,7 @@ const FeatureSection = () => {
             {feature.title}<br />{feature.title02}
           </h3>
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <p className="text-gray-600 text-sm">{feature.description}</p>
+          <p className="text-gray-500 text-sm">{feature.description}</p>
           </div>
         </div>
       ))}

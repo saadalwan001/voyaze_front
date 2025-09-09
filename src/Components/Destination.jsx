@@ -23,7 +23,7 @@ const DesSection = () => {
           Top Destinations in Sri Lanka
         </h2>
         <div className="w-20 h-1 mx-auto bg-[#313d44] mb-6 rounded"></div>
-        <p className="max-w-3xl mx-auto text-gray-600 mb-12">
+        <p className="max-w-xl mx-auto text-gray-600 mb-12">
           Discover Sri Lanka's most breathtaking locations – from serene beaches and misty hill country to ancient cities and wildlife escapes. Perfect spots for every kind of traveler.
         </p>
 
@@ -46,7 +46,7 @@ const DesSection = () => {
           ))}
         </div>
 
-        <button className="bg-[#03567F] text-white font-medium text-md px-[20px] py-[15px] w-fit rounded hover:bg-[#03567F] transition-all">
+        <button className="bg-[#03567F] text-white font-medium text-md px-[30px] py-[15px] w-fit rounded hover:bg-[#03567F] transition-all cursor-pointer">
           More Destinations &nbsp; →
         </button>
       </div>
