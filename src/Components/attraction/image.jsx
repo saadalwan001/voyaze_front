@@ -1,17 +1,27 @@
-import React from 'react';
-
-const img = [
-  { id: 1, title: "Wildlife Safaris", image: "safri.jpg" },
-  { id: 2, title: "Surfing", image: "surfing.jpg" },
-  { id: 3, title: "Tea Plantations Visit", image: "tea.jpg" },
-  { id: 4, title: "Local Food Experiences", image: "food.jpg" },
-  { id: 5, title: "Scenic Train Rides", image: "train.jpg" },
-  { id: 6, title: "Cultural Heritage Temples", image: "temple.webp" },
-];
+import React, { useEffect, useState } from "react";
+import api from "@/utlis/axios.js";
+import { useNavigate } from "react-router-dom";
 
 function ImageGrid() {
+  const [attractions, setAttractions] = useState([]);
+  const navigate = useNavigate();
+
+//to fetch only latest first six 
+  useEffect(() => {
+  api.get("/attractions/latest")
+    .then((res) => setAttractions(res.data))
+    .catch((err) => console.error("Error fetching latest attractions:", err));
+}, []);
+
+const handleClick = (id) => {
+    // Navigate to location page (replace "/location" with your route)
+    navigate(`/location/${id}`);
+  };
+
+
   return (
-    <section className="py-16 px-4 sm:px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 text-center">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
+
       <h3 className="text-lg sm:text-xl md:text-2xl text-gray-500 mb-2">
         Things To Do
       </h3>
@@ -19,17 +29,19 @@ function ImageGrid() {
         Attractions And <br /> Experiences
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
-        {img.map((dest) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {attractions.map((dest) => (
           <div
             key={dest.id}
-            className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 xl:h-96 2xl:h-96 rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2 hover:scale-105"
+            onClick={() => handleClick(dest.id)}
+            className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2 hover:scale-105 cursor-pointer"
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${dest.image})` }}
+              style={{ backgroundImage: `url(${import.meta.env.VITE_API_URL.replace('/api', '')}${dest.front_img})` }}
+              
             ></div>
-            <div className="absolute bottom-0 w-full  text-white font-medium text-lg sm:text-xl md:text-2xl py-2">
+            <div className="absolute bottom-0 w-full text-white font-medium text-lg sm:text-xl md:text-2xl py-2">
               {dest.title}
             </div>
           </div>

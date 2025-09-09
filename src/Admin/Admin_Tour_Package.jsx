@@ -17,7 +17,7 @@ export default function AdminTourPackage() {
   const [subImages, setSubImages] = useState([null, null, null, null]);
   const [subImagesPreview, setSubImagesPreview] = useState([null, null, null, null]);
 
-  // NEW → Package-level includes/excludes
+  // Package-level includes/excludes
   const [includedItems, setIncludedItems] = useState([]);
   const [excludedItems, setExcludedItems] = useState([]);
 
@@ -25,7 +25,11 @@ export default function AdminTourPackage() {
     { day_title: "Day 1", description: "" },
   ]);
 
-  // --- Fetch existing packages ---
+  // NEW: Destinations (Attractions)
+  const [attractions, setAttractions] = useState([]);
+  const [selectedAttractions, setSelectedAttractions] = useState([]);
+
+  // --- Fetch existing packages & attractions ---
   useEffect(() => {
     if (!isNewPackage) {
       const fetchPackages = async () => {
@@ -43,6 +47,20 @@ export default function AdminTourPackage() {
       };
       fetchPackages();
     }
+
+    // Fetch all attractions
+    const fetchAttractions = async () => {
+      try {
+        const token = localStorage.getItem("admin_token");
+        const res = await api.get("/admin-attractions", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAttractions(res.data); // expected: [{id, title}, ...]
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchAttractions();
   }, [isNewPackage]);
 
   // --- Image Handlers ---
@@ -104,6 +122,15 @@ export default function AdminTourPackage() {
     setExcludedItems(updated);
   };
 
+  // --- Destination Selection Handler ---
+  const handleAttractionSelect = (id) => {
+    if (selectedAttractions.includes(id)) {
+      setSelectedAttractions(selectedAttractions.filter((attId) => attId !== id));
+    } else {
+      setSelectedAttractions([...selectedAttractions, id]);
+    }
+  };
+
   // --- Submit Handler ---
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -115,12 +142,17 @@ export default function AdminTourPackage() {
       formData.append("title", title);
       formData.append("total_days", totalDays);
       formData.append("description", description);
-      includedItems.forEach(item => formData.append("included_items[]", item));
-      excludedItems.forEach(item => formData.append("excluded_items[]", item));
+      includedItems.forEach((item) => formData.append("included_items[]", item));
+      excludedItems.forEach((item) => formData.append("excluded_items[]", item));
 
       if (mainImage) formData.append("main_image", mainImage);
       subImages.forEach(
         (img, idx) => img && formData.append(`sub_image${idx + 1}`, img)
+      );
+
+      // add destinations
+      selectedAttractions.forEach((attId) =>
+        formData.append("attractions[]", attId)
       );
     } else {
       formData.append("existing_package_id", selectedPackage);
@@ -154,6 +186,7 @@ export default function AdminTourPackage() {
         setMainImagePreview(null);
         setSubImages([null, null, null, null]);
         setSubImagesPreview([null, null, null, null]);
+        setSelectedAttractions([]);
       }
 
       setItineraries([{ day_title: "Day 1", description: "" }]);
@@ -168,7 +201,9 @@ export default function AdminTourPackage() {
       <Admin_Nav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#313041] mt-20 mb-10 text-center sm:text-left">
-          {isNewPackage ? "Add New Tour Package" : "Add Itineraries to Existing Package"}
+          {isNewPackage
+            ? "Add New Tour Package"
+            : "Add Itineraries to Existing Package"}
         </h2>
 
         {/* New / Existing Toggle */}
@@ -180,7 +215,10 @@ export default function AdminTourPackage() {
             id="newPackageToggle"
             className="w-5 h-5 accent-blue-600"
           />
-          <label htmlFor="newPackageToggle" className="text-gray-700 font-medium">
+          <label
+            htmlFor="newPackageToggle"
+            className="text-gray-700 font-medium"
+          >
             Create New Package
           </label>
         </div>
@@ -189,7 +227,9 @@ export default function AdminTourPackage() {
           {/* Existing Package Dropdown */}
           {!isNewPackage && (
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-              <label className="w-full sm:w-1/4 font-medium text-gray-700">Select Package</label>
+              <label className="w-full sm:w-1/4 font-medium text-gray-700">
+                Select Package
+              </label>
               <select
                 value={selectedPackage}
                 onChange={(e) => setSelectedPackage(e.target.value)}
@@ -209,7 +249,9 @@ export default function AdminTourPackage() {
             <>
               {/* Title */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-                <label className="w-full sm:w-1/4 font-medium text-gray-700">Package Title</label>
+                <label className="w-full sm:w-1/4 font-medium text-gray-700">
+                  Package Title
+                </label>
                 <input
                   type="text"
                   value={title}
@@ -220,9 +262,39 @@ export default function AdminTourPackage() {
                 />
               </div>
 
+              {/* Destinations */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
+                <label className="w-full sm:w-1/4 font-medium text-gray-700 mt-1">
+                  Select Destinations
+                </label>
+                <div className="w-full sm:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {attractions.map((att) => (
+                    <label
+                      key={att.id}
+                      className={`flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer transition ${
+                        selectedAttractions.includes(att.id)
+                          ? "bg-blue-100 border-blue-500"
+                          : "bg-white border-gray-300"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        value={att.id}
+                        checked={selectedAttractions.includes(att.id)}
+                        onChange={() => handleAttractionSelect(att.id)}
+                        className="accent-blue-500"
+                      />
+                      {att.title}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* Total Days */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-                <label className="w-full sm:w-1/4 font-medium text-gray-700">Total Days</label>
+                <label className="w-full sm:w-1/4 font-medium text-gray-700">
+                  Total Days
+                </label>
                 <input
                   type="number"
                   min={1}
@@ -235,7 +307,9 @@ export default function AdminTourPackage() {
 
               {/* Description */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
-                <label className="w-full sm:w-1/4 font-medium text-gray-700 mt-1">Description</label>
+                <label className="w-full sm:w-1/4 font-medium text-gray-700 mt-1">
+                  Description
+                </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -266,7 +340,10 @@ export default function AdminTourPackage() {
                         <div className="flex items-center gap-1">
                           <Check size={16} /> {item}
                         </div>
-                        <button type="button" onClick={() => removeIncludeItem(i)}>
+                        <button
+                          type="button"
+                          onClick={() => removeIncludeItem(i)}
+                        >
                           X
                         </button>
                       </li>
@@ -292,7 +369,10 @@ export default function AdminTourPackage() {
                         <div className="flex items-center gap-1">
                           <X size={16} /> {item}
                         </div>
-                        <button type="button" onClick={() => removeExcludeItem(i)}>
+                        <button
+                          type="button"
+                          onClick={() => removeExcludeItem(i)}
+                        >
                           X
                         </button>
                       </li>
@@ -303,17 +383,23 @@ export default function AdminTourPackage() {
 
               {/* Images */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Images</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Images
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                   {/* Main Image */}
                   <div className="flex flex-col items-center">
-                    <label className="font-medium mb-1 text-gray-600">Main Image</label>
+                    <label className="font-medium mb-1 text-gray-600">
+                      Main Image
+                    </label>
                     <label className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700">
                       Choose Image
                       <input
                         type="file"
                         className="hidden"
-                        onChange={(e) => handleMainImageChange(e.target.files[0])}
+                        onChange={(e) =>
+                          handleMainImageChange(e.target.files[0])
+                        }
                       />
                     </label>
                     {mainImagePreview && (
@@ -323,19 +409,27 @@ export default function AdminTourPackage() {
                         className="mt-2 w-32 h-20 object-cover rounded-md"
                       />
                     )}
-                    {mainImage && <span className="mt-1 text-sm text-gray-700">{mainImage.name}</span>}
+                    {mainImage && (
+                      <span className="mt-1 text-sm text-gray-700">
+                        {mainImage.name}
+                      </span>
+                    )}
                   </div>
 
                   {/* Sub Images */}
                   {subImages.map((img, idx) => (
                     <div key={idx} className="flex flex-col items-center">
-                      <label className="font-medium mb-1 text-gray-600">Sub Image {idx + 1}</label>
+                      <label className="font-medium mb-1 text-gray-600">
+                        Sub Image {idx + 1}
+                      </label>
                       <label className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700">
                         Choose Image
                         <input
                           type="file"
                           className="hidden"
-                          onChange={(e) => handleSubImageChange(idx, e.target.files[0])}
+                          onChange={(e) =>
+                            handleSubImageChange(idx, e.target.files[0])
+                          }
                         />
                       </label>
                       {subImagesPreview[idx] && (
@@ -345,7 +439,11 @@ export default function AdminTourPackage() {
                           className="mt-2 w-32 h-20 object-cover rounded-md"
                         />
                       )}
-                      {img && <span className="mt-1 text-sm text-gray-700">{img.name}</span>}
+                      {img && (
+                        <span className="mt-1 text-sm text-gray-700">
+                          {img.name}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -355,7 +453,9 @@ export default function AdminTourPackage() {
 
           {/* Itineraries */}
           <div className="border-l-4 border-blue-600 bg-blue-50 p-6 rounded-lg space-y-4">
-            <h3 className="font-semibold text-xl text-[#313041] mb-2">Itineraries</h3>
+            <h3 className="font-semibold text-xl text-[#313041] mb-2">
+              Itineraries
+            </h3>
             {itineraries.map((it, idx) => (
               <div
                 key={idx}
@@ -367,7 +467,9 @@ export default function AdminTourPackage() {
                 <input
                   type="text"
                   value={it.day_title}
-                  onChange={(e) => handleItineraryChange(idx, "day_title", e.target.value)}
+                  onChange={(e) =>
+                    handleItineraryChange(idx, "day_title", e.target.value)
+                  }
                   className="col-span-12 sm:col-span-9 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-sm transition duration-200"
                 />
 
@@ -376,7 +478,9 @@ export default function AdminTourPackage() {
                 </label>
                 <textarea
                   value={it.description}
-                  onChange={(e) => handleItineraryChange(idx, "description", e.target.value)}
+                  onChange={(e) =>
+                    handleItineraryChange(idx, "description", e.target.value)
+                  }
                   rows={3}
                   placeholder="Write itinerary details..."
                   className="col-span-12 sm:col-span-9 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-sm transition duration-200 resize-none"
@@ -393,13 +497,13 @@ export default function AdminTourPackage() {
             </button>
           </div>
 
-          {/* Submit */}
-          <div className="text-center sm:text-right">
+                   {/* Submit */}
+          <div className="text-right">
             <button
               type="submit"
-              className="bg-[#024360] text-white px-6 py-3 rounded-lg hover:text-[#75798B] shadow-md transition duration-200 text-lg font-medium"
+              className="bg-[#024360] text-white px-6 py-3 rounded-lg hover:text-[#75798B] shadow-md transition duration-200 font-medium"
             >
-              {isNewPackage ? "Add Tour Package" : "Add Itineraries"}
+              {isNewPackage ? "Create Package" : "Add Itineraries"}
             </button>
           </div>
         </form>
