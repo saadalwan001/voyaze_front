@@ -15,8 +15,16 @@ import A_package from "@/Admin/Admin_Tour_Package.jsx";
 import PackageDetails from "./Tour/PackageDetails";
 import Admin_Tour_Packge_Card from '@/Admin/Admin_Tour_Packge_Card.jsx';
 import Admin_Edit_Tour_Package from '@/Admin/Admin_Edit_Tour_Package.jsx';
-import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page";
+import Admin_AddAttraction from "./Admin/Admin_AttractionAdd_Page.jsx";
 import Location from "@/location.jsx";
+import Admin_Attraction_Card from "./Admin/Admin_Attraction_Cards.jsx";
+import Admin_EditAttraction from "./Admin/Admin_Attraction_Edit.jsx";
+import AdminBlogCreate from "./Admin/Admin_CreateBlog.jsx";
+import Admin_Blog_Cards from "./Admin/Admin_BlogsCards";
+import AdminBlogEdit from "./Admin/Admin_BlogEdit.jsx";
+import Each_blog from "./Blog/Blog_Individual.jsx";
+import Admin_Contact from "@/Admin/Admin_Contact_Page.jsx";
+import Admin_Profile from '@/Admin/Admin_Profile_Page.jsx';
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -35,6 +43,8 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         <Route path="/admin-login" element={<Login/>}/>
         <Route path="/package/:id" element={<PackageDetails/>}/>
         <Route path="/location/:id" element={<Location/>}/>
+        <Route path="/blog/:id" element={<Each_blog/>}/>
+
         
 
 
@@ -83,6 +93,76 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         element={
           <ProtectedRoute>
             <Admin_AddAttraction/>
+          </ProtectedRoute>
+        }
+      />
+
+      {/*Attraction & Experienc cards */}
+      <Route
+        path="/admin-attraction/cards"
+        element={
+          <ProtectedRoute>
+            <Admin_Attraction_Card/>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Package Edit Attraction Cards */}
+      <Route
+        path="/admin-editattraction/:id"
+        element={
+          <ProtectedRoute>
+            <Admin_EditAttraction/>
+          </ProtectedRoute>
+        }
+      />
+
+        {/* Blog Creation Page */}
+      <Route
+        path="/admin-create-blogs"
+        element={
+          <ProtectedRoute>
+            <AdminBlogCreate/>
+          </ProtectedRoute>
+        }
+      />
+
+    
+       {/* All Blogs  Page */}
+      <Route
+        path="/admin-all-blogs"
+        element={
+          <ProtectedRoute>
+            <Admin_Blog_Cards/>
+          </ProtectedRoute>
+        }
+      />
+      {/*Blogs Edit  Page */}
+      <Route
+        path="/admin-edit-blogs/:id"
+        element={
+          <ProtectedRoute>
+            <AdminBlogEdit/>
+          </ProtectedRoute>
+        }
+      />
+
+       {/*Contact Page */}
+      <Route
+        path="/admin-contact"
+        element={
+          <ProtectedRoute>
+            <Admin_Contact/>
+          </ProtectedRoute>
+        }
+      />
+
+      {/*Profile Page */}
+      <Route
+        path="/admin-profile"
+        element={
+          <ProtectedRoute>
+            <Admin_Profile/>
           </ProtectedRoute>
         }
       />

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "@/utlis/axios.js";
-import Nav from "@/Components/Navigation.jsx";
+import Nav from "@/Components/about/A_naviagtion";
 import AttractionDetailCard from "@/Components/attraction/AttractionDetailCard.jsx";
-
+import DownSlider from "@/Components/attraction/AttractionSlider.jsx";
+import Footer from "./Components/Footer";
+import AttractionTourPackages from "./Components/attraction/AttractionTourPackages";
 
 function Location() {
   const { id } = useParams();
@@ -26,6 +28,9 @@ function Location() {
         description={attraction.description}
         back_img={attraction.back_img}
       />
+      <AttractionTourPackages attractionId={id}/>
+      <DownSlider/>
+      <Footer/>
     </div>
   );
 }

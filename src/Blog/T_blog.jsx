@@ -5,6 +5,7 @@ import image from "/blogimg.jpg";
 import Blog from "@/Components/blog/Blog_part.jsx";
 import Footer from '@/Components/Footer';
 
+
  function T_blog() {
   return (
     <>
@@ -14,6 +15,7 @@ import Footer from '@/Components/Footer';
     title="Blogs"
     />
     <Blog/>
+    
     <Footer/>
 
 
