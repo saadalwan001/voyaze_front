@@ -12,8 +12,8 @@ import {Link, useNavigate } from "react-router-dom";
         {name: "Tour Packages", href:"/admin-packcards"},
         {name: "Attraction & Experience", href:"/admin-attraction/cards"},
         {name: "Blogs", href:"/admin-all-blogs"},
-        {name: "Contact", href:"#"},
-        {name: "Profile", href:"#"},
+        {name: "Contact", href:"/admin-contact"},
+        {name: "Profile", href:"/admin-profile"},
         
     ];
 

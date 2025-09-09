@@ -22,7 +22,9 @@ import Admin_EditAttraction from "./Admin/Admin_Attraction_Edit.jsx";
 import AdminBlogCreate from "./Admin/Admin_CreateBlog.jsx";
 import Admin_Blog_Cards from "./Admin/Admin_BlogsCards";
 import AdminBlogEdit from "./Admin/Admin_BlogEdit.jsx";
-import Each_blog from "./Blog/Blog_Individual.jsx"
+import Each_blog from "./Blog/Blog_Individual.jsx";
+import Admin_Contact from "@/Admin/Admin_Contact_Page.jsx";
+import Admin_Profile from '@/Admin/Admin_Profile_Page.jsx';
 
 
 import ProtectedRoute from "@/ProtectedRoute.jsx";
@@ -141,6 +143,26 @@ import ProtectedRoute from "@/ProtectedRoute.jsx";
         element={
           <ProtectedRoute>
             <AdminBlogEdit/>
+          </ProtectedRoute>
+        }
+      />
+
+       {/*Contact Page */}
+      <Route
+        path="/admin-contact"
+        element={
+          <ProtectedRoute>
+            <Admin_Contact/>
+          </ProtectedRoute>
+        }
+      />
+
+      {/*Profile Page */}
+      <Route
+        path="/admin-profile"
+        element={
+          <ProtectedRoute>
+            <Admin_Profile/>
           </ProtectedRoute>
         }
       />

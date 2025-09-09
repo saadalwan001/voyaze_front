@@ -41,41 +41,66 @@ const Footer = () => {
 
             <div className="space-y-3 text-[#A9A8B6]">
               {contact?.phone1 && (
-                <p className="flex items-center gap-2">
+                <a
+                  href={`tel:${contact.phone1}`}
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
                   <Phone size={18} className="text-white" /> {contact.phone1}
-                </p>
+                </a>
               )}
               {contact?.phone2 && (
-                <p className="flex items-center gap-2">
+                <a
+                  href={`tel:${contact.phone2}`}
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
                   <Phone size={18} className="text-white" /> {contact.phone2}
-                </p>
+                </a>
               )}
               {contact?.land_p && (
-                <p className="flex items-center gap-2">
+                <a
+                  href={`tel:${contact.land_p}`}
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
                   <Phone size={18} className="text-white" /> {contact.land_p}
-                </p>
+                </a>
               )}
               {contact?.email && (
-                <p className="flex items-center gap-2">
+                <a
+                  href={`mailto:${contact.email}`}
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
                   <Mail size={18} className="text-white" /> {contact.email}
-                </p>
+                </a>
               )}
               {contact?.address && (
-                <p className="flex items-center gap-2">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    contact.address
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
                   <MapPin size={18} className="text-white" /> {contact.address}
-                </p>
+                </a>
               )}
               {contact?.whatsapp && (
-                <p className="flex items-center gap-2">
-                  <Phone size={18} className="text-white" /> WhatsApp: {contact.whatsapp}
-                </p>
+                <a
+                  href={`https://wa.me/${contact.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-white transition"
+                >
+                  <Phone size={18} className="text-white" /> WhatsApp:{" "}
+                  {contact.whatsapp}
+                </a>
               )}
             </div>
           </div>
 
           {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+          <div className="ml-25 ">
+            <h3 className="text-lg font-semibold mb-4 ">Quick Links</h3>
             <ul className="space-y-2 text-[#A9A8B6]">
               <li><a href="/" className="hover:text-gray-300">Home</a></li>
               <li><a href="/packages" className="hover:text-gray-300">Travel Packages</a></li>
