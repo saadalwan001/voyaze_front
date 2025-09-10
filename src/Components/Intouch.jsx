@@ -1,6 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
  function GetInTouchSection() {
+  const navigate = useNavigate();
   return (
      <section className="max-w-6xl mx-auto my-12 px-6 py-8 border border-gray-100 rounded-[20px] shadow-lg bg-white">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -12,7 +16,11 @@ import React from "react";
         {/* Right Column */}
         <button
           type="button"
-          className="inline-flex items-center px-5 py-3 bg-[#03567F] text-white font-semibold rounded-md hover:bg-[#024360] transition"
+          className="inline-flex items-center px-5 py-3 bg-[#03567F] text-white font-semibold rounded-md hover:bg-[#024360] transition hover:cursor-pointer"
+          onClick={() => navigate(`/contact`)
+
+
+          }
         >
           CLICK HERE&nbsp; &rarr;
         </button>
