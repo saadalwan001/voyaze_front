@@ -67,7 +67,7 @@ const PackageDetails = () => {
             activeTab === "itinerary"
               ? "text-blue-600 border-b-2 border-blue-600"
               : "text-gray-600"
-          }`}
+          }, hover:cursor-pointer`}
         >
           Itinerary
         </button>
@@ -78,7 +78,7 @@ const PackageDetails = () => {
             activeTab === "includes"
               ? "text-blue-600 border-b-2 border-blue-600"
               : "text-gray-600"
-          }`}
+          }, hover:cursor-pointer`}
         >
           Includes / Excludes
         </button>

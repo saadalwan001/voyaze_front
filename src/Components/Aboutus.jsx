@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AboutUs() {
+
+  const navigate=useNavigate();
   return (
     <section className="w-full py-4 md:py-16 bg-white mb-[80px]" id="about">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-center gap-8 md:gap-28">
@@ -49,7 +52,8 @@ export default function AboutUs() {
           </p>
 
           {/* Button */}
-          <button className="bg-[#03567F] text-white text-sm px-10 py-4 w-fit rounded hover:bg-[#024360] transition-all mt-5 cursor-pointer">
+          <button className="bg-[#03567F] text-white text-sm px-5 py-3 w-fit rounded hover:bg-[#024360] transition-all mt-5 hover:cursor-pointer"
+          onClick={()=>navigate("/about")}>
             READ MORE &nbsp; →
           </button>
         </div>
