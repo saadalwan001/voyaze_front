@@ -10,7 +10,7 @@ import Con from '@/Components/Contact/Contact_c.jsx';
     <Nav/>
     <Cover
     backgroundImage={Img}
-    title = "Get In Touch With US"
+    title = "Get In Touch With Us"
     />
     <Con/>
     
