@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "@/utlis/axios.js";
 import Admin_Nav from "@/Components/Admin/Admin_Nav.jsx";
-import { Check, X } from "lucide-react";
+import { Check, X, Plus, Trash2 } from "lucide-react";
 
 export default function AdminTourPackage() {
   // --- States ---
@@ -15,17 +15,32 @@ export default function AdminTourPackage() {
   const [mainImage, setMainImage] = useState(null);
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [subImages, setSubImages] = useState([null, null, null, null]);
-  const [subImagesPreview, setSubImagesPreview] = useState([null, null, null, null]);
+  const [subImagesPreview, setSubImagesPreview] = useState([
+    null,
+    null,
+    null,
+    null,
+  ]);
 
   // Package-level includes/excludes
   const [includedItems, setIncludedItems] = useState([]);
   const [excludedItems, setExcludedItems] = useState([]);
 
+  // NEW: Pricing States - Single tier per category
+  const [adultSinglePrice, setAdultSinglePrice] = useState("");
+  const [childSinglePrice, setChildSinglePrice] = useState("");
+  const [adultGroupMin, setAdultGroupMin] = useState("");
+  const [adultGroupMax, setAdultGroupMax] = useState("");
+  const [adultGroupPrice, setAdultGroupPrice] = useState("");
+  const [childGroupMin, setChildGroupMin] = useState("");
+  const [childGroupMax, setChildGroupMax] = useState("");
+  const [childGroupPrice, setChildGroupPrice] = useState("");
+
   const [itineraries, setItineraries] = useState([
     { day_title: "Day 1", description: "" },
   ]);
 
-  // NEW: Destinations (Attractions)
+  // Destinations (Attractions)
   const [attractions, setAttractions] = useState([]);
   const [selectedAttractions, setSelectedAttractions] = useState([]);
 
@@ -55,7 +70,7 @@ export default function AdminTourPackage() {
         const res = await api.get("/admin-attractions", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setAttractions(res.data); // expected: [{id, title}, ...]
+        setAttractions(res.data);
       } catch (err) {
         console.error(err);
       }
@@ -125,7 +140,9 @@ export default function AdminTourPackage() {
   // --- Destination Selection Handler ---
   const handleAttractionSelect = (id) => {
     if (selectedAttractions.includes(id)) {
-      setSelectedAttractions(selectedAttractions.filter((attId) => attId !== id));
+      setSelectedAttractions(
+        selectedAttractions.filter((attId) => attId !== id)
+      );
     } else {
       setSelectedAttractions([...selectedAttractions, id]);
     }
@@ -142,15 +159,50 @@ export default function AdminTourPackage() {
       formData.append("title", title);
       formData.append("total_days", totalDays);
       formData.append("description", description);
-      includedItems.forEach((item) => formData.append("included_items[]", item));
-      excludedItems.forEach((item) => formData.append("excluded_items[]", item));
+
+      // Pricing data
+      if (adultSinglePrice)
+        formData.append("adult_single_price", adultSinglePrice);
+      if (childSinglePrice)
+        formData.append("child_single_price", childSinglePrice);
+      
+      // Single tier group pricing
+      if (adultGroupMin || adultGroupMax || adultGroupPrice) {
+        const adultPricing = [{
+          min_people: parseInt(adultGroupMin) || 2,
+          max_people: adultGroupMax ? parseInt(adultGroupMax) : null,
+          price_per_person: adultGroupPrice
+        }].filter(tier => tier.min_people && tier.price_per_person);
+        
+        if (adultPricing.length > 0) {
+          formData.append("adult_group_pricing", JSON.stringify(adultPricing));
+        }
+      }
+      
+      if (childGroupMin || childGroupMax || childGroupPrice) {
+        const childPricing = [{
+          min_people: parseInt(childGroupMin) || 2,
+          max_people: childGroupMax ? parseInt(childGroupMax) : null,
+          price_per_person: childGroupPrice
+        }].filter(tier => tier.min_people && tier.price_per_person);
+        
+        if (childPricing.length > 0) {
+          formData.append("child_group_pricing", JSON.stringify(childPricing));
+        }
+      }
+
+      includedItems.forEach((item) =>
+        formData.append("included_items[]", item)
+      );
+      excludedItems.forEach((item) =>
+        formData.append("excluded_items[]", item)
+      );
 
       if (mainImage) formData.append("main_image", mainImage);
       subImages.forEach(
         (img, idx) => img && formData.append(`sub_image${idx + 1}`, img)
       );
 
-      // add destinations
       selectedAttractions.forEach((attId) =>
         formData.append("attractions[]", attId)
       );
@@ -177,6 +229,7 @@ export default function AdminTourPackage() {
       alert("Tour Package / Itineraries Added Successfully!");
 
       if (isNewPackage) {
+        // Reset all fields
         setTitle("");
         setTotalDays(1);
         setDescription("");
@@ -187,6 +240,14 @@ export default function AdminTourPackage() {
         setSubImages([null, null, null, null]);
         setSubImagesPreview([null, null, null, null]);
         setSelectedAttractions([]);
+        setAdultSinglePrice("");
+        setChildSinglePrice("");
+        setAdultGroupMin("");
+        setAdultGroupMax("");
+        setAdultGroupPrice("");
+        setChildGroupMin("");
+        setChildGroupMax("");
+        setChildGroupPrice("");
       }
 
       setItineraries([{ day_title: "Day 1", description: "" }]);
@@ -318,6 +379,137 @@ export default function AdminTourPackage() {
                   placeholder="Write a detailed description..."
                   className="w-full sm:w-3/4 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent shadow-sm transition duration-200 resize-none"
                 />
+              </div>
+
+              {/* PRICING SECTION */}
+              <div className="border-l-4 border-green-600 bg-green-50 p-6 rounded-lg space-y-6">
+                <h3 className="font-semibold text-xl text-[#313041] mb-4">
+                  Pricing Configuration
+                </h3>
+
+                {/* Single Person Pricing */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-2">
+                      Adult Single Price (USD)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={adultSinglePrice}
+                      onChange={(e) => setAdultSinglePrice(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:border-transparent shadow-sm transition duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-2">
+                      Child Single Price (USD)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={childSinglePrice}
+                      onChange={(e) => setChildSinglePrice(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:border-transparent shadow-sm transition duration-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Adult Group Pricing - Single Tier */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Adult Group Pricing</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3 bg-white rounded-lg border">
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Min People
+                      </label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={adultGroupMin}
+                        onChange={(e) => setAdultGroupMin(e.target.value)}
+                        placeholder="2"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Max People (Optional)
+                      </label>
+                      <input
+                        type="number"
+                        value={adultGroupMax}
+                        onChange={(e) => setAdultGroupMax(e.target.value)}
+                        placeholder="No limit"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Price Per Person
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={adultGroupPrice}
+                        onChange={(e) => setAdultGroupPrice(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Child Group Pricing - Single Tier */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Child Group Pricing</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3 bg-white rounded-lg border">
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Min People
+                      </label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={childGroupMin}
+                        onChange={(e) => setChildGroupMin(e.target.value)}
+                        placeholder="2"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Max People (Optional)
+                      </label>
+                      <input
+                        type="number"
+                        value={childGroupMax}
+                        onChange={(e) => setChildGroupMax(e.target.value)}
+                        placeholder="No limit"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Price Per Person
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={childGroupPrice}
+                        onChange={(e) => setChildGroupPrice(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Package Includes/Excludes */}
@@ -497,7 +689,7 @@ export default function AdminTourPackage() {
             </button>
           </div>
 
-                   {/* Submit */}
+          {/* Submit */}
           <div className="text-right">
             <button
               type="submit"
