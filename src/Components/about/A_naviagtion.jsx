@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from '@/context/CartContext';
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { getCartCount, setIsCartOpen, isInitialized } = useCart();
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/about" },  // Fixed here
+    { name: "About", href: "/about" },
     { name: "Tour Packages", href: "/tours" },
     { name: "Attraction and Experiences", href: "/attraction" },
     { name: "Destination", href: "/destinations" },
@@ -55,8 +57,50 @@ function Navigation() {
           ))}
         </nav>
 
+        {/* === CART ICON === */}
+        <div className="hidden md:flex items-center">
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            disabled={!isInitialized}
+          >
+            {!isInitialized ? (
+              <Loader className="w-6 h-6 animate-spin text-gray-400" />
+            ) : (
+              <>
+                <ShoppingCart className="w-6 h-6" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
+              </>
+            )}
+          </button>
+        </div>
+
         {/* === MOBILE MENU TOGGLE === */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center space-x-4">
+          {/* Mobile Cart Icon */}
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2"
+            disabled={!isInitialized}
+          >
+            {!isInitialized ? (
+              <Loader className="w-6 h-6 animate-spin text-gray-400" />
+            ) : (
+              <>
+                <ShoppingCart className="w-6 h-6" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
+              </>
+            )}
+          </button>
+          
           <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
             {isOpen ? <X size={24} color={scrolled ? "white" : "black"} /> : <Menu size={24} color={scrolled ? "white" : "black"} />}
           </button>
